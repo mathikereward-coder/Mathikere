@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // PWA so the app installs to the phone home screen and works offline.
 export default defineConfig({
+  base: './', // relative paths so it works on any host, including a sub-path
   plugins: [
     react(),
     VitePWA({
