@@ -142,6 +142,30 @@ label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 4px; f
 .worker-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .chip-btn { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--text); }
 .chip-btn.danger { border-color: var(--red); color: var(--red); }
+.role-badge.mobile { background: #e7f7ee; color: var(--green); }
+
+/* ---------- households: filter, clickable cards, detail modal ---------- */
+.booth-filter { flex: 0 0 auto; width: auto; max-width: 46%; }
+.count-line { margin: 2px 2px 10px; }
+.hh-card { cursor: pointer; transition: box-shadow .15s; }
+.hh-card:active { box-shadow: 0 0 0 2px var(--green) inset; }
+.hh-foot { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 8px; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 100; }
+.modal { background: #fff; width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; border-radius: 18px 18px 0 0; padding: 18px; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; position: sticky; top: -18px; background: #fff; padding-top: 4px; }
+.modal-head h3 { margin: 0; font-size: 17px; }
+.modal-x { background: #eef1f4; border: 0; border-radius: 8px; width: 34px; height: 34px; font-size: 16px; }
+.modal-body { margin-top: 8px; }
+.dl { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.dl span { color: var(--muted); white-space: nowrap; }
+.dl b { text-align: right; }
+.modal-sub { margin: 16px 0 8px; font-size: 15px; }
+.voter-detail { border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-bottom: 8px; background: #fafbfc; }
+.vd-name { font-size: 15px; margin-bottom: 2px; }
+.locked { color: #b3261e; font-weight: 600; }
+
+@media (min-width: 560px) { .modal-overlay { align-items: center; } .modal { border-radius: 18px; } }
 
 @media (max-width: 520px) {
   .chart-grid { grid-template-columns: 1fr; }

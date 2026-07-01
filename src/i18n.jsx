@@ -20,6 +20,10 @@ const STRINGS = {
     booths_label: 'Booths', all: 'All', edit_booths: 'Edit Booths', save_booths: 'Save Booths',
     saved_ok: 'Saved', confirm_deactivate: 'Remove this person’s access?',
     login_as_worker: 'They log in at this same web address using phone number + password.',
+    sees_mobile: 'sees mobile', hide_mobile: 'Hide Mobile', allow_mobile: 'Allow Mobile',
+    // households view
+    captured_by: 'Captured by', tap_details: 'tap for details', all_booths: 'All booths',
+    contact_hidden: 'Hidden — ask admin', details: 'Details', close: 'Close',
     // form
     household_details: 'Household Details',
     booth_number: 'Booth Number', part_number: 'Part Number',
@@ -70,6 +74,9 @@ const STRINGS = {
     booths_label: 'ಬೂತ್‌ಗಳು', all: 'ಎಲ್ಲಾ', edit_booths: 'ಬೂತ್‌ಗಳನ್ನು ಸಂಪಾದಿಸಿ', save_booths: 'ಬೂತ್‌ಗಳನ್ನು ಉಳಿಸಿ',
     saved_ok: 'ಉಳಿಸಲಾಗಿದೆ', confirm_deactivate: 'ಈ ವ್ಯಕ್ತಿಯ ಪ್ರವೇಶವನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?',
     login_as_worker: 'ಅವರು ಇದೇ ವೆಬ್ ವಿಳಾಸದಲ್ಲಿ ಫೋನ್ ಸಂಖ್ಯೆ + ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ ಲಾಗಿನ್ ಆಗುತ್ತಾರೆ.',
+    sees_mobile: 'ಮೊಬೈಲ್ ನೋಡಬಹುದು', hide_mobile: 'ಮೊಬೈಲ್ ಮರೆಮಾಡಿ', allow_mobile: 'ಮೊಬೈಲ್ ಅನುಮತಿಸಿ',
+    captured_by: 'ದಾಖಲಿಸಿದವರು', tap_details: 'ವಿವರಗಳಿಗೆ ಟ್ಯಾಪ್ ಮಾಡಿ', all_booths: 'ಎಲ್ಲಾ ಬೂತ್‌ಗಳು',
+    contact_hidden: 'ಮರೆಮಾಡಲಾಗಿದೆ — ಆಡ್ಮಿನ್‌ರನ್ನು ಕೇಳಿ', details: 'ವಿವರಗಳು', close: 'ಮುಚ್ಚಿ',
     household_details: 'ಮನೆಯ ವಿವರಗಳು',
     booth_number: 'ಬೂತ್ ಸಂಖ್ಯೆ', part_number: 'ಭಾಗ ಸಂಖ್ಯೆ',
     door_no: 'ಮನೆ ಸಂಖ್ಯೆ', street: 'ಮುಖ್ಯ ಮತ್ತು ಅಡ್ಡ ರಸ್ತೆ', landmark: 'ಗುರುತು ಸ್ಥಳ',

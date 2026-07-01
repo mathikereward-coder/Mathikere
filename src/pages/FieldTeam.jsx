@@ -64,6 +64,10 @@ export default function FieldTeam() {
     const { error } = await supabase.rpc('admin_set_role', { p_user_id: w.user_id, p_role: role })
     if (error) setErr(error.message); else load()
   }
+  async function setContact(w, can) {
+    const { error } = await supabase.rpc('admin_set_contact_permission', { p_user_id: w.user_id, p_can: can })
+    if (error) setErr(error.message); else load()
+  }
   function startEditBooths(w) { setEditId(w.user_id); setEditBooths(w.booths || []) }
   async function saveBooths(w) {
     const { error } = await supabase.rpc('admin_set_booths', { p_user_id: w.user_id, p_booths: editBooths })
@@ -119,6 +123,7 @@ export default function FieldTeam() {
               <div className="worker-name">{w.full_name || '—'}
                 <span className={`role-badge ${w.role}`}>{w.role === 'admin' ? t('role_admin') : t('role_worker')}</span>
                 {!w.active && <span className="role-badge inactive">{t('inactive_label')}</span>}
+                {w.role !== 'admin' && w.can_view_contact && <span className="role-badge mobile">📞 {t('sees_mobile')}</span>}
               </div>
               <div className="muted small">{w.phone ? `📞 ${w.phone}` : ''}</div>
             </div>
@@ -152,6 +157,9 @@ export default function FieldTeam() {
               {w.active
                 ? <button className="chip-btn danger" onClick={() => setActive(w, false)}>🚫 {t('deactivate')}</button>
                 : <button className="chip-btn" onClick={() => setActive(w, true)}>✅ {t('activate')}</button>}
+              {w.role !== 'admin' && (w.can_view_contact
+                ? <button className="chip-btn" onClick={() => setContact(w, false)}>📵 {t('hide_mobile')}</button>
+                : <button className="chip-btn" onClick={() => setContact(w, true)}>📞 {t('allow_mobile')}</button>)}
               {w.role === 'admin'
                 ? <button className="chip-btn" onClick={() => setRole(w, 'supporter')}>{t('make_worker')}</button>
                 : <button className="chip-btn" onClick={() => setRole(w, 'admin')}>👑 {t('make_admin')}</button>}

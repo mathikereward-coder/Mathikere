@@ -29,7 +29,7 @@ export default function Layout() {
       <nav className="tabbar">
         <NavLink to="/new" className="tab">➕ {t('new_household')}</NavLink>
         {isAdmin && <NavLink to="/dashboard" className="tab">📊 {t('dashboard')}</NavLink>}
-        {isAdmin && <NavLink to="/households" className="tab">🏠 {t('households')}</NavLink>}
+        <NavLink to="/households" className="tab">🏠 {t('households')}</NavLink>
         {isAdmin && <NavLink to="/team" className="tab">👥 {t('field_team')}</NavLink>}
       </nav>
 

@@ -17,7 +17,7 @@ export default function App() {
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route path="/new" element={<FieldForm />} />
             <Route path="/dashboard" element={<ProtectedRoute adminOnly><Dashboard /></ProtectedRoute>} />
-            <Route path="/households" element={<ProtectedRoute adminOnly><Households /></ProtectedRoute>} />
+            <Route path="/households" element={<Households />} />
             <Route path="/team" element={<ProtectedRoute adminOnly><FieldTeam /></ProtectedRoute>} />
           </Route>
           <Route path="*" element={<Navigate to="/new" replace />} />
