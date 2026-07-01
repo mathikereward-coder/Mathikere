@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import { useI18n } from '../i18n'
 import { useAuth } from '../auth/AuthContext'
 import { isConfigured } from '../supabaseClient'
-import { WARD_NAME } from '../constants'
+import { WARD_NAME, loginIdToEmail } from '../constants'
 import LangToggle from '../components/LangToggle'
 
 export default function Login() {
   const { t } = useI18n()
   const { signIn } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [loginId, setLoginId] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -19,7 +19,7 @@ export default function Login() {
     e.preventDefault()
     setError(''); setBusy(true)
     try {
-      await signIn(email.trim(), password)
+      await signIn(loginIdToEmail(loginId), password)
       navigate('/new')
     } catch (err) {
       setError(t('login_failed'))
@@ -41,9 +41,9 @@ export default function Login() {
         {!isConfigured && <div className="banner-warn">{t('config_needed')}</div>}
 
         <form onSubmit={onSubmit}>
-          <label>{t('email')}</label>
-          <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                 autoComplete="username" required disabled={!isConfigured} />
+          <label>{t('login_id')}</label>
+          <input type="text" value={loginId} onChange={e => setLoginId(e.target.value)}
+                 placeholder={t('login_id_hint')} autoComplete="username" required disabled={!isConfigured} />
           <label>{t('password')}</label>
           <input type="password" value={password} onChange={e => setPassword(e.target.value)}
                  autoComplete="current-password" required disabled={!isConfigured} />

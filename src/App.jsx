@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import FieldForm from './pages/FieldForm'
 import Dashboard from './pages/Dashboard'
 import Households from './pages/Households'
+import FieldTeam from './pages/FieldTeam'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
             <Route path="/new" element={<FieldForm />} />
             <Route path="/dashboard" element={<ProtectedRoute adminOnly><Dashboard /></ProtectedRoute>} />
             <Route path="/households" element={<ProtectedRoute adminOnly><Households /></ProtectedRoute>} />
+            <Route path="/team" element={<ProtectedRoute adminOnly><FieldTeam /></ProtectedRoute>} />
           </Route>
           <Route path="*" element={<Navigate to="/new" replace />} />
         </Routes>

@@ -122,6 +122,27 @@ label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 4px; f
 
 .center-screen { display: grid; place-items: center; min-height: 60vh; color: var(--muted); }
 
+/* ---------- field team ---------- */
+.small { font-size: 12px; }
+.team-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.team-head h2 { margin: 0; font-size: 19px; }
+.btn-inline { width: auto; padding: 10px 14px; font-size: 15px; }
+.booth-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px; margin-top: 4px; }
+.booth-chip { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 10px 0; font-weight: 700; color: var(--text); }
+.booth-chip.on { background: var(--green); color: #fff; border-color: var(--green); }
+.worker-card { padding: 14px; }
+.worker-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.worker-name { font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.role-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #eef1f4; color: var(--muted); }
+.role-badge.admin { background: #fff1d6; color: #8a6100; }
+.role-badge.inactive { background: #fde3e3; color: #b3261e; }
+.worker-booths { margin: 10px 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.booth-tag { background: #eef7f2; color: var(--green); border: 1px solid #cfe8dc; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 700; }
+.link-btn { background: none; border: 0; color: var(--green); font-weight: 700; font-size: 13px; padding: 2px 4px; text-decoration: underline; }
+.worker-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.chip-btn { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--text); }
+.chip-btn.danger { border-color: var(--red); color: var(--red); }
+
 @media (max-width: 520px) {
   .chart-grid { grid-template-columns: 1fr; }
 }
