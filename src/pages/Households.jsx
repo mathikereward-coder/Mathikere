@@ -141,6 +141,17 @@ export default function Households() {
               {detail.issue_note && <div className="dl"><span>{t('note_on_issues')}</span><b>{detail.issue_note}</b></div>}
               <div className="dl"><span>{t('captured_by')}</span><b>{detail.collector_name || '—'} · {fmtDate(detail.created_at)}</b></div>
 
+              {detail.latitude && detail.longitude && (
+                <div className="map-block">
+                  <iframe title="map" loading="lazy"
+                    src={`https://maps.google.com/maps?q=${detail.latitude},${detail.longitude}&z=16&output=embed`} />
+                  <a className="btn-ghost map-open" target="_blank" rel="noreferrer"
+                    href={`https://www.google.com/maps/search/?api=1&query=${detail.latitude},${detail.longitude}`}>
+                    🗺️ {t('open_in_maps')}
+                  </a>
+                </div>
+              )}
+
               <h4 className="modal-sub">{t('voters')} ({(detail.voters || []).length})</h4>
               {(detail.voters || []).map((v, i) => (
                 <div className="voter-detail" key={i}>

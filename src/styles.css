@@ -199,6 +199,25 @@ label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 4px; f
 .success-screen .btn-primary { margin-top: 18px; max-width: 280px; }
 @keyframes pop { 0% { transform: scale(.3); opacity: 0; } 60% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
 
+/* ---------- toast popups ---------- */
+.toast-wrap { position: fixed; left: 0; right: 0; bottom: 24px; z-index: 2000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; padding: 0 16px; }
+.toast { pointer-events: auto; display: flex; align-items: center; gap: 10px; max-width: 460px; width: 100%;
+  padding: 14px 16px; border-radius: 12px; font-weight: 600; font-size: 15px; color: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25); animation: toastUp .25s ease; }
+.toast-ic { font-size: 18px; }
+.toast-error { background: #c0392b; }
+.toast-success { background: var(--green); }
+.toast-info { background: #1c2530; }
+@keyframes toastUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* ---------- maps ---------- */
+.map-preview { margin-top: 12px; }
+.map-preview iframe, .map-block iframe { width: 100%; height: 180px; border: 1px solid var(--line); border-radius: 12px; }
+.map-coords { margin-top: 6px; text-align: center; }
+.map-block { margin: 14px 0; }
+.map-open { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; width: 100%; justify-content: center; text-decoration: none; }
+.access-label { margin: 12px 0 4px; font-weight: 700; }
+
 /* ---------- form polish ---------- */
 .card h2 .muted { font-weight: 500; font-size: 14px; }
 .form .field { margin-bottom: 12px; }

@@ -208,6 +208,7 @@ export default function FieldTeam() {
             </div>
           )}
 
+          <div className="access-label muted small">🔓 {t('access_label')}</div>
           <div className="worker-actions">
             <button className="chip-btn" onClick={() => resetPassword(w)}>🔑 {t('reset_password')}</button>
             {w.can_view_contact

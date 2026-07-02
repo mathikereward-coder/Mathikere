@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useI18n } from '../i18n'
+import { useToast } from '../components/Toast'
 import { useAuth } from '../auth/AuthContext'
 import { FORM_BOOTHS, RATION_CARDS, SCHEMES, ISSUES, ISSUE_ICONS, HOUSE_OWNERSHIP, GENDERS } from '../constants'
 import { queueSubmission } from '../db'
@@ -17,13 +18,13 @@ const emptyHousehold = (assignedBooth) => ({
 
 export default function FieldForm() {
   const { t } = useI18n()
+  const toast = useToast()
   const { profile } = useAuth()
   const onlyBooth = profile?.booths?.length === 1 ? profile.booths[0] : ''
 
   const [hh, setHh] = useState(emptyHousehold(onlyBooth))
   const [voters, setVoters] = useState([emptyVoter()])
   const [gps, setGps] = useState(false)
-  const [err, setErr] = useState('')
   const [submitted, setSubmitted] = useState(null) // { synced: bool }
 
   const boothOptions = profile?.role === 'supporter' && profile?.booths?.length
@@ -52,17 +53,16 @@ export default function FieldForm() {
   }
 
   function resetForm() {
-    setHh(emptyHousehold(onlyBooth)); setVoters([emptyVoter()]); setGps(false); setErr(''); setSubmitted(null)
+    setHh(emptyHousehold(onlyBooth)); setVoters([emptyVoter()]); setGps(false); setSubmitted(null)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   async function onSave(e) {
     e.preventDefault()
-    setErr('')
-    if (hh.booth_number === '') { setErr(t('required_booth')); return }
+    if (hh.booth_number === '') { toast(t('required_booth')); return }
     // contact: if entered, must be exactly 10 digits
     for (const v of voters) {
-      if (v.contact && v.contact.length !== 10) { setErr(t('contact_invalid')); return }
+      if (v.contact && v.contact.length !== 10) { toast(t('contact_invalid')); return }
     }
     const cleanVoters = voters
       .filter(v => v.name.trim())
@@ -72,7 +72,7 @@ export default function FieldForm() {
         voter_id: v.voter_id.trim() || null,
         contact: v.contact || null
       }))
-    if (!cleanVoters.length) { setErr(t('required_voter')); return }
+    if (!cleanVoters.length) { toast(t('required_voter')); return }
 
     const household = {
       client_uuid: crypto.randomUUID(),
@@ -110,8 +110,6 @@ export default function FieldForm() {
 
   return (
     <form className="form" onSubmit={onSave}>
-      {err && <div className="banner-error">{err}</div>}
-
       {/* ---------- VOTERS (top) ---------- */}
       <section className="card">
         <h2>🧑‍🤝‍🧑 {t('voters')} <span className="muted">({voters.length})</span></h2>
@@ -252,6 +250,12 @@ export default function FieldForm() {
             {hh.is_special ? '⭐' : '☆'} {t('mark_special')}
           </button>
         </div>
+        {gps && hh.latitude && (
+          <div className="map-preview">
+            <iframe title="map" loading="lazy" src={`https://maps.google.com/maps?q=${hh.latitude},${hh.longitude}&z=16&output=embed`} />
+            <div className="map-coords muted small">📍 {hh.latitude.toFixed(5)}, {hh.longitude.toFixed(5)}</div>
+          </div>
+        )}
       </section>
 
       <p className="consent">{t('consent_note')}</p>
