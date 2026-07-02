@@ -143,6 +143,9 @@ label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 4px; f
 .chip-btn { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--text); }
 .chip-btn.danger { border-color: var(--red); color: var(--red); }
 .role-badge.mobile { background: #e7f7ee; color: var(--green); }
+.role-badge.super { background: #efe3ff; color: #6b21a8; }
+.super-card { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+.team-head-gap { margin-top: 22px; }
 
 /* ---------- households: filter, clickable cards, detail modal ---------- */
 .booth-filter { flex: 0 0 auto; width: auto; max-width: 46%; }

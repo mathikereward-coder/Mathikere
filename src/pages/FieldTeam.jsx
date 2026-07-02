@@ -6,14 +6,16 @@ import { BOOTHS } from '../constants'
 
 export default function FieldTeam() {
   const { t } = useI18n()
-  const { session } = useAuth()
+  const { session, isSuperAdmin } = useAuth()
+  const myId = session?.user?.id
+
   const [team, setTeam] = useState([])
   const [loading, setLoading] = useState(true)
-  const [showAdd, setShowAdd] = useState(false)
   const [flash, setFlash] = useState('')
   const [err, setErr] = useState('')
 
-  // add-worker form state
+  // add forms
+  const [addMode, setAddMode] = useState(null) // 'member' | 'worker' | null
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [pwd, setPwd] = useState('')
@@ -27,25 +29,34 @@ export default function FieldTeam() {
   async function load() {
     setLoading(true)
     const { data, error } = await supabase.rpc('admin_list_team')
-    if (error) setErr(error.message)
-    else setTeam(data || [])
+    if (error) setErr(error.message); else setTeam(data || [])
     setLoading(false)
   }
   useEffect(() => { load() }, [])
 
+  const members = team.filter(w => w.role === 'admin')
+  const workers = team.filter(w => w.role === 'supporter')
+  const superRow = team.find(w => w.role === 'super_admin')
+
   const toggle = (arr, setArr, b) =>
     setArr(arr.includes(b) ? arr.filter(x => x !== b) : [...arr, b].sort((a, c) => a - c))
 
-  async function createWorker(e) {
-    e.preventDefault()
-    setErr(''); setFlash(''); setBusy(true)
-    const { data, error } = await supabase.rpc('admin_create_worker', {
-      p_name: name.trim(), p_phone: phone.trim(), p_password: pwd, p_booths: booths
-    })
+  function openAdd(mode) {
+    setAddMode(mode); setName(''); setPhone(''); setPwd(''); setBooths(''); setBooths([])
+    setErr(''); setFlash('')
+  }
+
+  async function submitAdd(e) {
+    e.preventDefault(); setErr(''); setFlash(''); setBusy(true)
+    const fn = addMode === 'member' ? 'admin_create_member' : 'admin_create_worker'
+    const args = addMode === 'member'
+      ? { p_name: name.trim(), p_phone: phone.trim(), p_password: pwd }
+      : { p_name: name.trim(), p_phone: phone.trim(), p_password: pwd, p_booths: booths }
+    const { data, error } = await supabase.rpc(fn, args)
     setBusy(false)
     if (error) { setErr(error.message); return }
     setFlash(`${t('worker_created')}  →  ${data.login_phone} / ${pwd}`)
-    setName(''); setPhone(''); setPwd(''); setBooths([]); setShowAdd(false)
+    setAddMode(null); setName(''); setPhone(''); setPwd(''); setBooths([])
     load()
   }
 
@@ -53,7 +64,7 @@ export default function FieldTeam() {
     const np = window.prompt(`${t('new_password')} — ${w.full_name}`)
     if (!np) return
     const { error } = await supabase.rpc('admin_reset_password', { p_user_id: w.user_id, p_password: np })
-    setErr(error ? error.message : ''); if (!error) setFlash(`${t('saved_ok')}: ${w.full_name} → ${np}`)
+    if (error) setErr(error.message); else setFlash(`${t('saved_ok')}: ${w.full_name} → ${np}`)
   }
   async function setActive(w, active) {
     if (!active && !window.confirm(t('confirm_deactivate'))) return
@@ -75,23 +86,87 @@ export default function FieldTeam() {
   }
 
   if (loading) return <div className="center-screen">{t('loading')}</div>
-  const myId = session?.user?.id
+
+  const boothPicker = (arr, setArr) => (
+    <div className="booth-grid">
+      {BOOTHS.map(b => (
+        <button type="button" key={b} className={`booth-chip ${arr.includes(b) ? 'on' : ''}`}
+          onClick={() => toggle(arr, setArr, b)}>{b}</button>
+      ))}
+    </div>
+  )
 
   return (
     <div className="team">
       {flash && <div className="banner-ok">{flash}</div>}
       {err && <div className="banner-error">{err}</div>}
 
-      <div className="team-head">
-        <h2>{t('field_team')}</h2>
-        <button className="btn-primary btn-inline" onClick={() => setShowAdd(s => !s)}>
-          {showAdd ? t('cancel') : `＋ ${t('add_worker')}`}
+      {/* Super admin identity */}
+      {superRow && (
+        <div className="card super-card">
+          <span className="role-badge super">👑 {t('super_admin')}</span>
+          <strong>{superRow.full_name}</strong>
+          {superRow.user_id === myId && <span className="muted small"> · {t('you')}</span>}
+        </div>
+      )}
+
+      {/* ---------- MEMBERS (super admin only) ---------- */}
+      {isSuperAdmin && (
+        <>
+          <div className="team-head">
+            <h2>{t('members_title')} <span className="muted small">({members.length}/5)</span></h2>
+            <button className="btn-primary btn-inline" disabled={members.length >= 5}
+              onClick={() => addMode === 'member' ? setAddMode(null) : openAdd('member')}>
+              {addMode === 'member' ? t('cancel') : `＋ ${t('add_member')}`}
+            </button>
+          </div>
+          <p className="muted small">{t('member_help')}</p>
+
+          {addMode === 'member' && (
+            <form className="card" onSubmit={submitAdd}>
+              <div className="field"><label>{t('worker_name')}</label>
+                <input value={name} onChange={e => setName(e.target.value)} required /></div>
+              <div className="grid2">
+                <div className="field"><label>{t('phone_number')}</label>
+                  <input value={phone} onChange={e => setPhone(e.target.value)} inputMode="tel" required /></div>
+                <div className="field"><label>{t('set_password')}</label>
+                  <input value={pwd} onChange={e => setPwd(e.target.value)} required /></div>
+              </div>
+              <button className="btn-primary" type="submit" disabled={busy}>{busy ? '…' : t('add_member')}</button>
+            </form>
+          )}
+
+          {members.length === 0 ? <div className="card muted">{t('no_members')}</div> : members.map(w => (
+            <div className="card worker-card" key={w.user_id}>
+              <div className="worker-name">{w.full_name || '—'}
+                <span className="role-badge admin">{t('role_member')}</span>
+                {!w.active && <span className="role-badge inactive">{t('inactive_label')}</span>}
+              </div>
+              <div className="muted small">{w.phone ? `📞 ${w.phone}` : ''}</div>
+              <div className="worker-actions">
+                <button className="chip-btn" onClick={() => resetPassword(w)}>🔑 {t('reset_password')}</button>
+                {w.active
+                  ? <button className="chip-btn danger" onClick={() => setActive(w, false)}>🚫 {t('deactivate')}</button>
+                  : <button className="chip-btn" onClick={() => setActive(w, true)}>✅ {t('activate')}</button>}
+                <button className="chip-btn" onClick={() => setRole(w, 'supporter')}>⬇ {t('remove_admin')}</button>
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* ---------- WORKERS (super admin + members) ---------- */}
+      <div className="team-head team-head-gap">
+        <h2>{t('field_workers')} <span className="muted small">({workers.length})</span></h2>
+        <button className="btn-primary btn-inline"
+          onClick={() => addMode === 'worker' ? setAddMode(null) : openAdd('worker')}>
+          {addMode === 'worker' ? t('cancel') : `＋ ${t('add_worker')}`}
         </button>
       </div>
       <p className="muted small">{t('login_as_worker')}</p>
 
-      {showAdd && (
-        <form className="card" onSubmit={createWorker}>
+      {addMode === 'worker' && (
+        <form className="card" onSubmit={submitAdd}>
           <div className="field"><label>{t('worker_name')}</label>
             <input value={name} onChange={e => setName(e.target.value)} required /></div>
           <div className="grid2">
@@ -100,71 +175,45 @@ export default function FieldTeam() {
             <div className="field"><label>{t('set_password')}</label>
               <input value={pwd} onChange={e => setPwd(e.target.value)} required /></div>
           </div>
-          <div className="field">
-            <label>{t('assign_booths')}</label>
-            <div className="booth-grid">
-              {BOOTHS.map(b => (
-                <button type="button" key={b}
-                  className={`booth-chip ${booths.includes(b) ? 'on' : ''}`}
-                  onClick={() => toggle(booths, setBooths, b)}>{b}</button>
-              ))}
-            </div>
-          </div>
-          <button className="btn-primary" type="submit" disabled={busy}>
-            {busy ? '…' : t('create_worker')}
-          </button>
+          <div className="field"><label>{t('assign_booths')}</label>{boothPicker(booths, setBooths)}</div>
+          <button className="btn-primary" type="submit" disabled={busy}>{busy ? '…' : t('create_worker')}</button>
         </form>
       )}
 
-      {team.length === 0 ? <div className="card">{t('no_workers')}</div> : team.map(w => (
+      {workers.length === 0 ? <div className="card muted">{t('no_workers')}</div> : workers.map(w => (
         <div className="card worker-card" key={w.user_id}>
-          <div className="worker-top">
-            <div>
-              <div className="worker-name">{w.full_name || '—'}
-                <span className={`role-badge ${w.role}`}>{w.role === 'admin' ? t('role_admin') : t('role_worker')}</span>
-                {!w.active && <span className="role-badge inactive">{t('inactive_label')}</span>}
-                {w.role !== 'admin' && w.can_view_contact && <span className="role-badge mobile">📞 {t('sees_mobile')}</span>}
-              </div>
-              <div className="muted small">{w.phone ? `📞 ${w.phone}` : ''}</div>
-            </div>
+          <div className="worker-name">{w.full_name || '—'}
+            <span className="role-badge">{t('role_worker')}</span>
+            {!w.active && <span className="role-badge inactive">{t('inactive_label')}</span>}
+            {w.can_view_contact && <span className="role-badge mobile">📞 {t('sees_mobile')}</span>}
           </div>
+          <div className="muted small">{w.phone ? `📞 ${w.phone}` : ''}</div>
 
-          {w.role !== 'admin' && (
-            editId === w.user_id ? (
-              <div className="field">
-                <div className="booth-grid">
-                  {BOOTHS.map(b => (
-                    <button type="button" key={b}
-                      className={`booth-chip ${editBooths.includes(b) ? 'on' : ''}`}
-                      onClick={() => toggle(editBooths, setEditBooths, b)}>{b}</button>
-                  ))}
-                </div>
-                <button className="btn-add" onClick={() => saveBooths(w)}>💾 {t('save_booths')}</button>
-              </div>
-            ) : (
-              <div className="worker-booths">
-                <span className="muted small">{t('booths_label')}: </span>
-                {(w.booths || []).length ? w.booths.map(b => <span className="booth-tag" key={b}>{b}</span>)
-                  : <span className="muted small">—</span>}
-                <button className="link-btn" onClick={() => startEditBooths(w)}>{t('edit_booths')}</button>
-              </div>
-            )
-          )}
-
-          {w.user_id !== myId && (
-            <div className="worker-actions">
-              <button className="chip-btn" onClick={() => resetPassword(w)}>🔑 {t('reset_password')}</button>
-              {w.active
-                ? <button className="chip-btn danger" onClick={() => setActive(w, false)}>🚫 {t('deactivate')}</button>
-                : <button className="chip-btn" onClick={() => setActive(w, true)}>✅ {t('activate')}</button>}
-              {w.role !== 'admin' && (w.can_view_contact
-                ? <button className="chip-btn" onClick={() => setContact(w, false)}>📵 {t('hide_mobile')}</button>
-                : <button className="chip-btn" onClick={() => setContact(w, true)}>📞 {t('allow_mobile')}</button>)}
-              {w.role === 'admin'
-                ? <button className="chip-btn" onClick={() => setRole(w, 'supporter')}>{t('make_worker')}</button>
-                : <button className="chip-btn" onClick={() => setRole(w, 'admin')}>👑 {t('make_admin')}</button>}
+          {editId === w.user_id ? (
+            <div className="field">
+              {boothPicker(editBooths, setEditBooths)}
+              <button className="btn-add" onClick={() => saveBooths(w)}>💾 {t('save_booths')}</button>
+            </div>
+          ) : (
+            <div className="worker-booths">
+              <span className="muted small">{t('booths_label')}: </span>
+              {(w.booths || []).length ? w.booths.map(b => <span className="booth-tag" key={b}>{b}</span>)
+                : <span className="muted small">—</span>}
+              <button className="link-btn" onClick={() => startEditBooths(w)}>{t('edit_booths')}</button>
             </div>
           )}
+
+          <div className="worker-actions">
+            <button className="chip-btn" onClick={() => resetPassword(w)}>🔑 {t('reset_password')}</button>
+            {w.can_view_contact
+              ? <button className="chip-btn" onClick={() => setContact(w, false)}>📵 {t('hide_mobile')}</button>
+              : <button className="chip-btn" onClick={() => setContact(w, true)}>📞 {t('allow_mobile')}</button>}
+            {w.active
+              ? <button className="chip-btn danger" onClick={() => setActive(w, false)}>🚫 {t('deactivate')}</button>
+              : <button className="chip-btn" onClick={() => setActive(w, true)}>✅ {t('activate')}</button>}
+            {isSuperAdmin && members.length < 5 &&
+              <button className="chip-btn" onClick={() => setRole(w, 'admin')}>⬆ {t('make_member')}</button>}
+          </div>
         </div>
       ))}
     </div>

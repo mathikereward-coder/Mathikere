@@ -8,6 +8,8 @@ import SyncBadge from './SyncBadge'
 export default function Layout() {
   const { t } = useI18n()
   const { isAdmin, profile, signOut } = useAuth()
+  const roleLabel = profile?.role === 'super_admin' ? t('super_admin')
+    : profile?.role === 'admin' ? t('role_member') : t('role_worker')
 
   return (
     <div className="app">
@@ -16,7 +18,7 @@ export default function Layout() {
           <img src="/icon.svg" alt="" className="brand-logo" />
           <div>
             <div className="brand-title">{WARD_NAME}</div>
-            <div className="brand-sub">{isAdmin ? t('admin') : t('supporter')}{profile?.full_name ? ` · ${profile.full_name}` : ''}</div>
+            <div className="brand-sub">{roleLabel}{profile?.full_name ? ` · ${profile.full_name}` : ''}</div>
           </div>
         </div>
         <div className="topbar-actions">

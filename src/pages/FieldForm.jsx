@@ -91,6 +91,40 @@ export default function FieldForm() {
       {err && <div className="banner-error">{err}</div>}
 
       <section className="card">
+        <h2>{t('voters')} ({voters.length})</h2>
+        {voters.map((v, i) => (
+          <div className="voter-row" key={i}>
+            <div className="voter-head">
+              <span className="voter-num">#{i + 1}</span>
+              {voters.length > 1 && (
+                <button type="button" className="btn-remove" onClick={() => removeVoter(i)}>✕ {t('remove')}</button>
+              )}
+            </div>
+            <div className="grid2">
+              <div className="field span2">
+                <label>{t('voter_name')}</label>
+                <input value={v.name} onChange={e => setVoter(i, 'name', e.target.value)} />
+              </div>
+              <div className="field">
+                <label>{t('age')}</label>
+                <input value={v.age} onChange={e => setVoter(i, 'age', e.target.value)} inputMode="numeric" />
+              </div>
+              <div className="field">
+                <label>{t('contact')}</label>
+                <input value={v.contact} onChange={e => setVoter(i, 'contact', e.target.value)} inputMode="tel" />
+              </div>
+              <div className="field span2">
+                <label>{t('voter_id')}</label>
+                <input value={v.voter_id} onChange={e => setVoter(i, 'voter_id', e.target.value)}
+                       style={{ textTransform: 'uppercase' }} />
+              </div>
+            </div>
+          </div>
+        ))}
+        <button type="button" className="btn-add" onClick={addVoter}>＋ {t('add_voter')}</button>
+      </section>
+
+      <section className="card">
         <h2>{t('household_details')}</h2>
         <div className="grid2">
           <div className="field">
@@ -162,40 +196,6 @@ export default function FieldForm() {
         <button type="button" className={`btn-gps ${gps ? 'on' : ''}`} onClick={tagGps}>
           📍 {gps ? t('gps_tagged') : t('use_gps')}
         </button>
-      </section>
-
-      <section className="card">
-        <h2>{t('voters')} ({voters.length})</h2>
-        {voters.map((v, i) => (
-          <div className="voter-row" key={i}>
-            <div className="voter-head">
-              <span className="voter-num">#{i + 1}</span>
-              {voters.length > 1 && (
-                <button type="button" className="btn-remove" onClick={() => removeVoter(i)}>✕ {t('remove')}</button>
-              )}
-            </div>
-            <div className="grid2">
-              <div className="field span2">
-                <label>{t('voter_name')}</label>
-                <input value={v.name} onChange={e => setVoter(i, 'name', e.target.value)} />
-              </div>
-              <div className="field">
-                <label>{t('age')}</label>
-                <input value={v.age} onChange={e => setVoter(i, 'age', e.target.value)} inputMode="numeric" />
-              </div>
-              <div className="field">
-                <label>{t('contact')}</label>
-                <input value={v.contact} onChange={e => setVoter(i, 'contact', e.target.value)} inputMode="tel" />
-              </div>
-              <div className="field span2">
-                <label>{t('voter_id')}</label>
-                <input value={v.voter_id} onChange={e => setVoter(i, 'voter_id', e.target.value)}
-                       style={{ textTransform: 'uppercase' }} />
-              </div>
-            </div>
-          </div>
-        ))}
-        <button type="button" className="btn-add" onClick={addVoter}>＋ {t('add_voter')}</button>
       </section>
 
       <p className="consent">{t('consent_note')}</p>

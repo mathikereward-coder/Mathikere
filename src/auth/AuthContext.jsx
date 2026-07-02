@@ -46,9 +46,10 @@ export function AuthProvider({ children }) {
     setProfile(null)
   }
 
-  const isAdmin = profile?.role === 'admin'
+  const isSuperAdmin = profile?.role === 'super_admin'
+  const isAdmin = profile?.role === 'admin' || isSuperAdmin
   return (
-    <AuthContext.Provider value={{ session, profile, isAdmin, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, profile, isAdmin, isSuperAdmin, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )

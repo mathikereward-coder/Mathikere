@@ -21,6 +21,10 @@ const STRINGS = {
     saved_ok: 'Saved', confirm_deactivate: 'Remove this person’s access?',
     login_as_worker: 'They log in at this same web address using phone number + password.',
     sees_mobile: 'sees mobile', hide_mobile: 'Hide Mobile', allow_mobile: 'Allow Mobile',
+    // roles / super admin
+    super_admin: 'Super Admin', you: 'You', members_title: 'Members', field_workers: 'Field Workers',
+    add_member: 'Add Member', member_help: 'Members have full admin rights (max 5). They can manage workers but not other members.',
+    no_members: 'No members yet.', role_member: 'Member', remove_admin: 'Remove Admin', make_member: 'Make Member',
     // households view
     captured_by: 'Captured by', tap_details: 'tap for details', all_booths: 'All booths',
     contact_hidden: 'Hidden — ask admin', details: 'Details', close: 'Close',
@@ -75,6 +79,9 @@ const STRINGS = {
     saved_ok: 'ಉಳಿಸಲಾಗಿದೆ', confirm_deactivate: 'ಈ ವ್ಯಕ್ತಿಯ ಪ್ರವೇಶವನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?',
     login_as_worker: 'ಅವರು ಇದೇ ವೆಬ್ ವಿಳಾಸದಲ್ಲಿ ಫೋನ್ ಸಂಖ್ಯೆ + ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ ಲಾಗಿನ್ ಆಗುತ್ತಾರೆ.',
     sees_mobile: 'ಮೊಬೈಲ್ ನೋಡಬಹುದು', hide_mobile: 'ಮೊಬೈಲ್ ಮರೆಮಾಡಿ', allow_mobile: 'ಮೊಬೈಲ್ ಅನುಮತಿಸಿ',
+    super_admin: 'ಸೂಪರ್ ಅಡ್ಮಿನ್', you: 'ನೀವು', members_title: 'ಸದಸ್ಯರು', field_workers: 'ಕ್ಷೇತ್ರ ಕಾರ್ಯಕರ್ತರು',
+    add_member: 'ಸದಸ್ಯರನ್ನು ಸೇರಿಸಿ', member_help: 'ಸದಸ್ಯರಿಗೆ ಪೂರ್ಣ ಅಡ್ಮಿನ್ ಹಕ್ಕುಗಳಿವೆ (ಗರಿಷ್ಠ 5). ಅವರು ಕಾರ್ಯಕರ್ತರನ್ನು ನಿರ್ವಹಿಸಬಹುದು, ಆದರೆ ಇತರ ಸದಸ್ಯರನ್ನಲ್ಲ.',
+    no_members: 'ಇನ್ನೂ ಸದಸ್ಯರಿಲ್ಲ.', role_member: 'ಸದಸ್ಯ', remove_admin: 'ಅಡ್ಮಿನ್ ತೆಗೆದುಹಾಕಿ', make_member: 'ಸದಸ್ಯರನ್ನಾಗಿ ಮಾಡಿ',
     captured_by: 'ದಾಖಲಿಸಿದವರು', tap_details: 'ವಿವರಗಳಿಗೆ ಟ್ಯಾಪ್ ಮಾಡಿ', all_booths: 'ಎಲ್ಲಾ ಬೂತ್‌ಗಳು',
     contact_hidden: 'ಮರೆಮಾಡಲಾಗಿದೆ — ಆಡ್ಮಿನ್‌ರನ್ನು ಕೇಳಿ', details: 'ವಿವರಗಳು', close: 'ಮುಚ್ಚಿ',
     household_details: 'ಮನೆಯ ವಿವರಗಳು',
