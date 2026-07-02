@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useI18n } from '../i18n'
 import { useAuth } from '../auth/AuthContext'
 import { supabase } from '../supabaseClient'
@@ -6,6 +7,7 @@ import { BOOTHS } from '../constants'
 
 export default function FieldTeam() {
   const { t } = useI18n()
+  const navigate = useNavigate()
   const { session, isSuperAdmin } = useAuth()
   const myId = session?.user?.id
 
@@ -13,16 +15,6 @@ export default function FieldTeam() {
   const [loading, setLoading] = useState(true)
   const [flash, setFlash] = useState('')
   const [err, setErr] = useState('')
-
-  // add forms
-  const [addMode, setAddMode] = useState(null) // 'member' | 'worker' | null
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [pwd, setPwd] = useState('')
-  const [booths, setBooths] = useState([])
-  const [busy, setBusy] = useState(false)
-
-  // inline booth editor
   const [editId, setEditId] = useState(null)
   const [editBooths, setEditBooths] = useState([])
 
@@ -40,25 +32,6 @@ export default function FieldTeam() {
 
   const toggle = (arr, setArr, b) =>
     setArr(arr.includes(b) ? arr.filter(x => x !== b) : [...arr, b].sort((a, c) => a - c))
-
-  function openAdd(mode) {
-    setAddMode(mode); setName(''); setPhone(''); setPwd(''); setBooths(''); setBooths([])
-    setErr(''); setFlash('')
-  }
-
-  async function submitAdd(e) {
-    e.preventDefault(); setErr(''); setFlash(''); setBusy(true)
-    const fn = addMode === 'member' ? 'admin_create_member' : 'admin_create_worker'
-    const args = addMode === 'member'
-      ? { p_name: name.trim(), p_phone: phone.trim(), p_password: pwd }
-      : { p_name: name.trim(), p_phone: phone.trim(), p_password: pwd, p_booths: booths }
-    const { data, error } = await supabase.rpc(fn, args)
-    setBusy(false)
-    if (error) { setErr(error.message); return }
-    setFlash(`${t('worker_created')}  →  ${data.login_phone} / ${pwd}`)
-    setAddMode(null); setName(''); setPhone(''); setPwd(''); setBooths([])
-    load()
-  }
 
   async function resetPassword(w) {
     const np = window.prompt(`${t('new_password')} — ${w.full_name}`)
@@ -91,21 +64,11 @@ export default function FieldTeam() {
 
   if (loading) return <div className="center-screen">{t('loading')}</div>
 
-  const boothPicker = (arr, setArr) => (
-    <div className="booth-grid">
-      {BOOTHS.map(b => (
-        <button type="button" key={b} className={`booth-chip ${arr.includes(b) ? 'on' : ''}`}
-          onClick={() => toggle(arr, setArr, b)}>{b}</button>
-      ))}
-    </div>
-  )
-
   return (
     <div className="team">
       {flash && <div className="banner-ok">{flash}</div>}
       {err && <div className="banner-error">{err}</div>}
 
-      {/* Super admin identity */}
       {superRow && (
         <div className="card super-card">
           <span className="role-badge super">👑 {t('super_admin')}</span>
@@ -120,25 +83,9 @@ export default function FieldTeam() {
           <div className="team-head">
             <h2>{t('members_title')} <span className="muted small">({members.length}/5)</span></h2>
             <button className="btn-primary btn-inline" disabled={members.length >= 5}
-              onClick={() => addMode === 'member' ? setAddMode(null) : openAdd('member')}>
-              {addMode === 'member' ? t('cancel') : `＋ ${t('add_member')}`}
-            </button>
+              onClick={() => navigate('/team/add/member')}>＋ {t('add_member')}</button>
           </div>
           <p className="muted small">{t('member_help')}</p>
-
-          {addMode === 'member' && (
-            <form className="card" onSubmit={submitAdd}>
-              <div className="field"><label>{t('worker_name')}</label>
-                <input value={name} onChange={e => setName(e.target.value)} required /></div>
-              <div className="grid2">
-                <div className="field"><label>{t('phone_number')}</label>
-                  <input value={phone} onChange={e => setPhone(e.target.value)} inputMode="tel" required /></div>
-                <div className="field"><label>{t('set_password')}</label>
-                  <input value={pwd} onChange={e => setPwd(e.target.value)} required /></div>
-              </div>
-              <button className="btn-primary" type="submit" disabled={busy}>{busy ? '…' : t('add_member')}</button>
-            </form>
-          )}
 
           {members.length === 0 ? <div className="card muted">{t('no_members')}</div> : members.map(w => (
             <div className="card worker-card" key={w.user_id}>
@@ -147,6 +94,7 @@ export default function FieldTeam() {
                 {!w.active && <span className="role-badge inactive">{t('inactive_label')}</span>}
               </div>
               <div className="muted small">{w.phone ? `📞 ${w.phone}` : ''}</div>
+              <div className="access-label muted small">🔓 {t('access_label')}</div>
               <div className="worker-actions">
                 <button className="chip-btn" onClick={() => resetPassword(w)}>🔑 {t('reset_password')}</button>
                 {w.active
@@ -162,27 +110,9 @@ export default function FieldTeam() {
       {/* ---------- WORKERS (super admin + members) ---------- */}
       <div className="team-head team-head-gap">
         <h2>{t('field_workers')} <span className="muted small">({workers.length})</span></h2>
-        <button className="btn-primary btn-inline"
-          onClick={() => addMode === 'worker' ? setAddMode(null) : openAdd('worker')}>
-          {addMode === 'worker' ? t('cancel') : `＋ ${t('add_worker')}`}
-        </button>
+        <button className="btn-primary btn-inline" onClick={() => navigate('/team/add/worker')}>＋ {t('add_worker')}</button>
       </div>
       <p className="muted small">{t('login_as_worker')}</p>
-
-      {addMode === 'worker' && (
-        <form className="card" onSubmit={submitAdd}>
-          <div className="field"><label>{t('worker_name')}</label>
-            <input value={name} onChange={e => setName(e.target.value)} required /></div>
-          <div className="grid2">
-            <div className="field"><label>{t('phone_number')}</label>
-              <input value={phone} onChange={e => setPhone(e.target.value)} inputMode="tel" required /></div>
-            <div className="field"><label>{t('set_password')}</label>
-              <input value={pwd} onChange={e => setPwd(e.target.value)} required /></div>
-          </div>
-          <div className="field"><label>{t('assign_booths')}</label>{boothPicker(booths, setBooths)}</div>
-          <button className="btn-primary" type="submit" disabled={busy}>{busy ? '…' : t('create_worker')}</button>
-        </form>
-      )}
 
       {workers.length === 0 ? <div className="card muted">{t('no_workers')}</div> : workers.map(w => (
         <div className="card worker-card" key={w.user_id}>
@@ -196,7 +126,12 @@ export default function FieldTeam() {
 
           {editId === w.user_id ? (
             <div className="field">
-              {boothPicker(editBooths, setEditBooths)}
+              <div className="booth-grid">
+                {BOOTHS.map(b => (
+                  <button type="button" key={b} className={`booth-chip ${editBooths.includes(b) ? 'on' : ''}`}
+                    onClick={() => toggle(editBooths, setEditBooths, b)}>{b}</button>
+                ))}
+              </div>
               <button className="btn-add" onClick={() => saveBooths(w)}>💾 {t('save_booths')}</button>
             </div>
           ) : (

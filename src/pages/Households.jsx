@@ -7,7 +7,7 @@ import { BOOTHS, ISSUE_ICONS } from '../constants'
 
 export default function Households() {
   const { t } = useI18n()
-  const { isAdmin, profile } = useAuth()
+  const { isAdmin, isSuperAdmin, profile } = useAuth()
   const canSeeSpecial = isAdmin || profile?.canViewSpecial
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
@@ -15,6 +15,14 @@ export default function Households() {
   const [booth, setBooth] = useState('all')
   const [tab, setTab] = useState('all') // 'all' | 'special'
   const [detail, setDetail] = useState(null)
+  const [confirmDel, setConfirmDel] = useState(null)
+
+  async function deleteEntry(h) {
+    const { error } = await supabase.from('households').delete().eq('id', h.id)
+    if (error) { console.warn(error.message); return }
+    setRows(rows.filter(r => r.id !== h.id))
+    setConfirmDel(null); setDetail(null)
+  }
 
   async function load() {
     setLoading(true)
@@ -141,6 +149,17 @@ export default function Households() {
               {detail.issue_note && <div className="dl"><span>{t('note_on_issues')}</span><b>{detail.issue_note}</b></div>}
               <div className="dl"><span>{t('captured_by')}</span><b>{detail.collector_name || '—'} · {fmtDate(detail.created_at)}</b></div>
 
+              <h4 className="modal-sub">{t('voters')} ({(detail.voters || []).length})</h4>
+              {(detail.voters || []).map((v, i) => (
+                <div className="voter-detail" key={i}>
+                  <div className="vd-name">{i + 1}. {genderIcon(v.gender)} <strong>{v.name}</strong>{v.age ? `, ${v.age}` : ''}</div>
+                  <div className="muted small">{t('voter_id')}: {v.voter_id || '—'}</div>
+                  <div className="muted small">
+                    {t('contact')}: {v.contact ? <b>{v.contact}</b> : <span className="locked">🔒 {t('contact_hidden')}</span>}
+                  </div>
+                </div>
+              ))}
+
               {detail.latitude && detail.longitude && (
                 <div className="map-block">
                   <iframe title="map" loading="lazy"
@@ -152,16 +171,23 @@ export default function Households() {
                 </div>
               )}
 
-              <h4 className="modal-sub">{t('voters')} ({(detail.voters || []).length})</h4>
-              {(detail.voters || []).map((v, i) => (
-                <div className="voter-detail" key={i}>
-                  <div className="vd-name">{i + 1}. {genderIcon(v.gender)} <strong>{v.name}</strong>{v.age ? `, ${v.age}` : ''}</div>
-                  <div className="muted small">{t('voter_id')}: {v.voter_id || '—'}</div>
-                  <div className="muted small">
-                    {t('contact')}: {v.contact ? <b>{v.contact}</b> : <span className="locked">🔒 {t('contact_hidden')}</span>}
-                  </div>
-                </div>
-              ))}
+              {isSuperAdmin && (
+                <button className="btn-delete" onClick={() => setConfirmDel(detail)}>🗑️ {t('delete_entry')}</button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmDel && (
+        <div className="modal-overlay confirm-overlay" onClick={() => setConfirmDel(null)}>
+          <div className="confirm-box" onClick={e => e.stopPropagation()}>
+            <div className="confirm-emoji">🗑️</div>
+            <h3>{t('confirm_delete_title')}</h3>
+            <p className="muted">{t('confirm_delete_body')}</p>
+            <div className="confirm-actions">
+              <button className="btn-ghost" onClick={() => setConfirmDel(null)}>{t('cancel')}</button>
+              <button className="btn-danger" onClick={() => deleteEntry(confirmDel)}>{t('yes_delete')}</button>
             </div>
           </div>
         </div>

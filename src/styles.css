@@ -191,6 +191,28 @@ label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 4px; f
 .row-split > button { flex: 1; }
 .btn-special { padding: 11px; border: 1px dashed #f4b400; background: #fffbe9; color: #8a6100; border-radius: 10px; font-weight: 700; }
 .btn-special.on { background: #f4b400; color: #4a3200; border-style: solid; }
+/* equal-size gps & special buttons */
+.row-split > .btn-gps, .row-split > .btn-special {
+  min-height: 50px; display: flex; align-items: center; justify-content: center; text-align: center; margin: 0; }
+
+/* delete + confirm */
+.btn-delete { width: 100%; margin-top: 16px; padding: 12px; border: 1px solid var(--red); background: #fff;
+  color: var(--red); border-radius: 10px; font-weight: 700; }
+.btn-danger { background: var(--red); color: #fff; border: 0; border-radius: 10px; padding: 12px 18px; font-weight: 700; }
+.confirm-overlay { align-items: center; }
+.confirm-box { background: #fff; border-radius: 16px; padding: 24px 20px; margin: 20px; max-width: 380px; text-align: center; }
+.confirm-emoji { font-size: 46px; }
+.confirm-box h3 { margin: 8px 0 6px; }
+.confirm-actions { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
+.confirm-actions button { flex: 1; }
+
+/* add member/worker page */
+.addperson { padding: 4px; }
+.back-link { display: inline-block; margin-bottom: 8px; text-decoration: none; font-size: 15px; }
+.add-title { margin: 4px 0 8px; }
+.cred-box { background: #f5f6f8; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin: 8px 0; width: 100%; max-width: 320px; }
+.cred-box > div { display: flex; justify-content: space-between; gap: 16px; padding: 6px 0; }
+.cred-box b { font-size: 17px; }
 
 /* ---------- success screen ---------- */
 .success-screen { text-align: center; padding: 48px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
