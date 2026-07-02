@@ -79,6 +79,10 @@ export default function FieldTeam() {
     const { error } = await supabase.rpc('admin_set_contact_permission', { p_user_id: w.user_id, p_can: can })
     if (error) setErr(error.message); else load()
   }
+  async function setSpecial(w, can) {
+    const { error } = await supabase.rpc('admin_set_special_permission', { p_user_id: w.user_id, p_can: can })
+    if (error) setErr(error.message); else load()
+  }
   function startEditBooths(w) { setEditId(w.user_id); setEditBooths(w.booths || []) }
   async function saveBooths(w) {
     const { error } = await supabase.rpc('admin_set_booths', { p_user_id: w.user_id, p_booths: editBooths })
@@ -186,6 +190,7 @@ export default function FieldTeam() {
             <span className="role-badge">{t('role_worker')}</span>
             {!w.active && <span className="role-badge inactive">{t('inactive_label')}</span>}
             {w.can_view_contact && <span className="role-badge mobile">📞 {t('sees_mobile')}</span>}
+            {w.can_view_special && <span className="role-badge super">⭐ {t('sees_special')}</span>}
           </div>
           <div className="muted small">{w.phone ? `📞 ${w.phone}` : ''}</div>
 
@@ -208,6 +213,9 @@ export default function FieldTeam() {
             {w.can_view_contact
               ? <button className="chip-btn" onClick={() => setContact(w, false)}>📵 {t('hide_mobile')}</button>
               : <button className="chip-btn" onClick={() => setContact(w, true)}>📞 {t('allow_mobile')}</button>}
+            {isSuperAdmin && (w.can_view_special
+              ? <button className="chip-btn" onClick={() => setSpecial(w, false)}>☆ {t('hide_special')}</button>
+              : <button className="chip-btn" onClick={() => setSpecial(w, true)}>⭐ {t('allow_special')}</button>)}
             {w.active
               ? <button className="chip-btn danger" onClick={() => setActive(w, false)}>🚫 {t('deactivate')}</button>
               : <button className="chip-btn" onClick={() => setActive(w, true)}>✅ {t('activate')}</button>}

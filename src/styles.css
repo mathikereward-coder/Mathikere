@@ -170,6 +170,40 @@ label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 4px; f
 
 @media (min-width: 560px) { .modal-overlay { align-items: center; } .modal { border-radius: 18px; } }
 
+/* ---------- tabs (residents / special) ---------- */
+.tabs-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.seg { flex: 1; padding: 11px 8px; border: 1px solid var(--line); background: #fff; border-radius: 10px;
+  font-weight: 700; font-size: 14px; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.seg.on { background: var(--green); color: #fff; border-color: var(--green); }
+.seg-count { background: rgba(255,255,255,.3); border-radius: 999px; padding: 0 7px; font-size: 12px; }
+.seg.on .seg-count { background: rgba(255,255,255,.35); }
+
+/* ---------- issue chips with icons ---------- */
+.issue-chips .chip { display: inline-flex; align-items: center; gap: 5px; }
+.chip-ic { font-size: 15px; }
+
+/* ---------- special marker ---------- */
+.hh-card.special { border-color: #f4c430; box-shadow: 0 0 0 1px #f4c430 inset; }
+.star-btn { background: none; border: 0; font-size: 22px; line-height: 1; padding: 0 2px; color: #c9ced4; }
+.star-btn.on { color: #f4b400; }
+.addr-line { margin: 2px 0 8px; }
+.row-split { display: flex; gap: 10px; margin-top: 12px; }
+.row-split > button { flex: 1; }
+.btn-special { padding: 11px; border: 1px dashed #f4b400; background: #fffbe9; color: #8a6100; border-radius: 10px; font-weight: 700; }
+.btn-special.on { background: #f4b400; color: #4a3200; border-style: solid; }
+
+/* ---------- success screen ---------- */
+.success-screen { text-align: center; padding: 48px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.success-emoji { font-size: 76px; animation: pop .4s ease; }
+.success-screen h2 { margin: 4px 0 0; font-size: 24px; color: var(--green); }
+.success-screen .btn-primary { margin-top: 18px; max-width: 280px; }
+@keyframes pop { 0% { transform: scale(.3); opacity: 0; } 60% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
+
+/* ---------- form polish ---------- */
+.card h2 .muted { font-weight: 500; font-size: 14px; }
+.form .field { margin-bottom: 12px; }
+.form .grid2 .field { margin-bottom: 0; }
+
 @media (max-width: 520px) {
   .chart-grid { grid-template-columns: 1fr; }
 }

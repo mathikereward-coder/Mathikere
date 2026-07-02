@@ -26,12 +26,13 @@ export function AuthProvider({ children }) {
   async function loadProfile(userId) {
     setLoading(true)
     const { data: p } = await supabase
-      .from('profiles').select('full_name, role').eq('id', userId).single()
+      .from('profiles').select('full_name, role, can_view_special').eq('id', userId).single()
     const { data: booths } = await supabase
       .from('supporter_booths').select('booth_number').eq('user_id', userId)
     setProfile({
       role: p?.role || 'supporter',
       full_name: p?.full_name || '',
+      canViewSpecial: !!p?.can_view_special,
       booths: (booths || []).map(b => b.booth_number)
     })
     setLoading(false)
