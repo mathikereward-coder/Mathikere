@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useI18n } from '../i18n'
 import { useToast } from '../components/Toast'
+import { useAuth } from '../auth/AuthContext'
 import { supabase } from '../supabaseClient'
 import { BOOTHS } from '../constants'
 
@@ -11,6 +12,7 @@ export default function AddPerson() {
   const { t } = useI18n()
   const toast = useToast()
   const navigate = useNavigate()
+  const { isSuperAdmin } = useAuth()
   const { kind } = useParams() // 'member' | 'worker'
   const isWorker = kind === 'worker'
 
@@ -18,6 +20,8 @@ export default function AddPerson() {
   const [phone, setPhone] = useState('')
   const [pwd, setPwd] = useState('')
   const [booths, setBooths] = useState([])
+  const [allowMobile, setAllowMobile] = useState(false)
+  const [allowSpecial, setAllowSpecial] = useState(false)
   const [busy, setBusy] = useState(false)
   const [created, setCreated] = useState(null)
 
@@ -31,13 +35,18 @@ export default function AddPerson() {
       ? { p_name: name.trim(), p_phone: phone.trim(), p_password: pwd, p_booths: booths }
       : { p_name: name.trim(), p_phone: phone.trim(), p_password: pwd }
     const { data, error } = await supabase.rpc(fn, args)
+    if (error) { setBusy(false); toast(error.message); return }
+    // apply access permissions chosen at creation (workers only)
+    if (isWorker && data?.user_id) {
+      if (allowMobile) await supabase.rpc('admin_set_contact_permission', { p_user_id: data.user_id, p_can: true })
+      if (allowSpecial && isSuperAdmin) await supabase.rpc('admin_set_special_permission', { p_user_id: data.user_id, p_can: true })
+    }
     setBusy(false)
-    if (error) { toast(error.message); return }
     setCreated({ ...data, name: name.trim(), password: pwd })
   }
 
   function addAnother() {
-    setCreated(null); setName(''); setPhone(''); setPwd(''); setBooths([])
+    setCreated(null); setName(''); setPhone(''); setPwd(''); setBooths([]); setAllowMobile(false); setAllowSpecial(false)
     window.scrollTo({ top: 0 })
   }
 
@@ -78,15 +87,29 @@ export default function AddPerson() {
             <input value={pwd} onChange={e => setPwd(e.target.value)} required /></div>
         </div>
         {isWorker && (
-          <div className="field">
-            <label>{t('assign_booths')}</label>
-            <div className="booth-grid">
-              {BOOTHS.map(b => (
-                <button type="button" key={b} className={`booth-chip ${booths.includes(b) ? 'on' : ''}`}
-                  onClick={() => toggle(b)}>{b}</button>
-              ))}
+          <>
+            <div className="access-head">🔓 {t('access_label')}</div>
+            <div className="field">
+              <label>{t('assign_booths')}</label>
+              <div className="booth-grid">
+                {BOOTHS.map(b => (
+                  <button type="button" key={b} className={`booth-chip ${booths.includes(b) ? 'on' : ''}`}
+                    onClick={() => toggle(b)}>{b}</button>
+                ))}
+              </div>
             </div>
-          </div>
+            <div className="field">
+              <label>{t('permissions_label')}</label>
+              <div className="chips">
+                <button type="button" className={`chip ${allowMobile ? 'on' : ''}`}
+                  onClick={() => setAllowMobile(!allowMobile)}>📞 {t('see_mobile')}</button>
+                {isSuperAdmin && (
+                  <button type="button" className={`chip ${allowSpecial ? 'on' : ''}`}
+                    onClick={() => setAllowSpecial(!allowSpecial)}>⭐ {t('see_special')}</button>
+                )}
+              </div>
+            </div>
+          </>
         )}
         <button className="btn-primary" type="submit" disabled={busy}>
           {busy ? '…' : (isWorker ? t('create_worker') : t('add_member'))}

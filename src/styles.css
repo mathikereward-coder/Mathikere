@@ -239,6 +239,7 @@ label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 4px; f
 .map-block { margin: 14px 0; }
 .map-open { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; width: 100%; justify-content: center; text-decoration: none; }
 .access-label { margin: 12px 0 4px; font-weight: 700; }
+.access-head { margin: 6px 0 10px; font-weight: 800; font-size: 15px; color: var(--green); border-top: 1px solid var(--line); padding-top: 12px; }
 
 /* ---------- form polish ---------- */
 .card h2 .muted { font-weight: 500; font-size: 14px; }
